@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Done List · 桐桐</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#1a1a2e;font-family:'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;display:flex;justify-content:center;align-items:center;min-height:100vh;padding:16px}
+.card{background:#16213e;border-radius:20px;padding:32px 24px;width:100%;max-width:440px;box-shadow:0 8px 40px rgba(0,0,0,0.4);border:1px solid #0f3460}
+h1{font-size:22px;font-weight:700;color:#e94560;letter-spacing:1px;margin-bottom:8px}
+.header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.date-nav{display:flex;align-items:center;gap:10px;margin-bottom:20px}
+.date-nav button{background:#0f3460;border:none;color:#c4d1de;width:32px;height:32px;border-radius:50%;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.date-nav button:active{background:#e94560}
+.date-display{flex:1;text-align:center;font-size:15px;color:#c4d1de;font-weight:500}
+.date-display .weekday{font-size:12px;color:#6c7a89;margin-left:6px}
+.date-display .today-dot{display:inline-block;width:6px;height:6px;background:#e94560;border-radius:50%;margin-left:6px;vertical-align:middle}
+.counter{text-align:right;font-size:13px;color:#6c7a89;margin-bottom:14px}
+.counter span{color:#e94560;font-weight:700;font-size:18px}
+.done-list{list-style:none;margin-bottom:16px}
+.done-item{display:flex;align-items:center;padding:12px 14px;margin-bottom:6px;background:#1a1a2e;border-radius:12px;border:1px solid #0f3460}
+.done-item .check{width:22px;height:22px;border-radius:50%;background:#e94560;margin-right:12px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;color:white}
+.done-item .item-text{flex:1;font-size:15px;color:#c4d1de}
+.done-item .item-time{font-size:11px;color:#4a5568;margin-left:8px;flex-shrink:0}
+.done-item .del-btn{background:none;border:none;color:#4a5568;font-size:14px;cursor:pointer;padding:4px 6px;margin-left:4px;opacity:0;transition:opacity 0.2s}
+.done-item:active .del-btn,.done-item:hover .del-btn{opacity:1}
+.done-item .del-btn:active{color:#e94560}
+.empty-state{text-align:center;padding:28px 0;color:#3a4a5a;font-size:14px;font-style:italic;line-height:1.8}
+.empty-state .icon{font-size:36px;display:block;margin-bottom:8px}
+.add-section{display:flex;gap:8px;border-top:1px solid #0f3460;padding-top:14px}
+.add-section input{flex:1;background:#1a1a2e;border:1px solid #0f3460;border-radius:10px;padding:10px 14px;color:#c4d1de;font-size:14px;outline:none}
+.add-section input:focus{border-color:#e94560}
+.add-section input::placeholder{color:#3a4a5a}
+.add-section button{background:#e94560;border:none;color:white;font-size:14px;font-weight:600;padding:10px 18px;border-radius:10px;cursor:pointer;white-space:nowrap}
+.add-section button:active{background:#c0392b}
+.footer{margin-top:20px;text-align:center;font-size:11px;color:#4a5568;line-height:1.6}
+.footer strong{color:#e94560;font-weight:500}
+.streak-badge{display:none;text-align:center;margin-bottom:12px;font-size:12px;color:#e94560;background:rgba(233,69,96,0.1);padding:6px 12px;border-radius:20px;width:fit-content;margin:0 auto 12px auto}
+.streak-badge.show{display:block}
+</style>
+</head>
+<body>
+<div class="card">
+<div class="header"><h1>📋 Done List</h1></div>
+<div class="date-nav">
+<button id="prevDay">◀</button>
+<div class="date-display" id="dateDisplay"></div>
+<button id="nextDay">▶</button>
+<button id="todayBtn" style="font-size:11px;width:auto;padding:0 10px;border-radius:12px;margin-left:6px">今天</button>
+</div>
+<div class="streak-badge" id="streakBadge">🔥 连续 <span id="streakCount">0</span> 天有 Done！</div>
+<div class="counter">已完成：<span id="count">0</span> 项</div>
+<ul class="done-list" id="doneList"></ul>
+<div class="add-section">
+<input type="text" id="itemInput" placeholder="做了什么？做完再写 ✨" maxlength="40">
+<button id="addBtn">+ 记下</button>
+</div>
+<div class="footer">规则：<strong>做完才记</strong> · 我不提前观测<br>泊岸 · 事后知道的岸</div>
+</div>
+<script>
+var STORAGE_KEY='tongtong_done_list',WEEKDAYS=['日','一','二','三','四','五','六'];
+function fmtDate(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function parseDate(s){var p=s.split('-').map(Number);return new Date(p[0],p[1]-1,p[2])}
+function getStorage(){try{var r=localStorage.getItem(STORAGE_KEY);return r?JSON.parse(r):{}}catch(e){return{}}}
+function saveStorage(d){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(d))}catch(e){}}
+function initToday(){var d=getStorage(),t=fmtDate(new Date());if(!d[t]||d[t].length===0){d[t]=[{text:'🧸 洗了床上的棉花娃娃',time:'14:xx'},{text:'🥬 桌上蔬菜放进冰箱',time:'14:xx'},{text:'💧 洗脸',time:'14:xx'},{text:'🍱 午饭吃完（外卖）',time:'14:xx'},{text:'🏃‍♀️ 健身房爬坡30min · 300大卡',time:'20:19'}];saveStorage(d)}}
+var currentDateStr=fmtDate(new Date());
+function render(){var d=getStorage(),items=d[currentDateStr]||[],t=fmtDate(new Date()),isToday=currentDateStr===t,p=parseDate(currentDateStr),dateHtml=currentDateStr+'<span class="weekday">周'+WEEKDAYS[p.getDay()]+'</span>';if(isToday)dateHtml+='<span class="today-dot"></span>';document.getElementById('dateDisplay').innerHTML=dateHtml;document.getElementById('count').textContent=items.length;var listEl=document.getElementById('doneList');if(items.length===0){var icon=isToday?'✨':'📭',msg=isToday?'今天还没记 done<br>做完什么就写上去吧':'这天没有记录';listEl.innerHTML='<div class="empty-state"><span class="icon">'+icon+'</span>'+msg+'</div>'}else{var html='';for(var i=0;i<items.length;i++){var item=items[i];html+='<li class="done-item"><div class="check">✓</div><span class="item-text">'+escHtml(item.text)+'</span><span class="item-time">'+escHtml(item.time)+'</span><button class="del-btn" data-index="'+i+'">×</button></li>'}listEl.innerHTML=html;var btns=listEl.querySelectorAll('.del-btn');for(var j=0;j<btns.length;j++){btns[j].addEventListener('click',function(e){e.stopPropagation();deleteItem(parseInt(this.dataset.index))})}}updateStreak(d,t)}
+function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function addItem(){var t=document.getElementById('itemInput').value.trim();if(!t)return;var n=new Date(),ts=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0'),d=getStorage(),td=fmtDate(new Date());if(!d[td])d[td]=[];d[td].push({text:t,time:ts});saveStorage(d);document.getElementById('itemInput').value='';if(currentDateStr!==td)currentDateStr=td;render()}
+function deleteItem(i){var d=getStorage();if(!d[currentDateStr])return;d[currentDateStr].splice(i,1);if(d[currentDateStr].length===0)delete d[currentDateStr];saveStorage(d);render()}
+function navigate(delta){var d=parseDate(currentDateStr);d.setDate(d.getDate()+delta);currentDateStr=fmtDate(d);render()}
+function goToday(){currentDateStr=fmtDate(new Date());render()}
+function updateStreak(d,t){var s=0,dt=new Date();for(var i=0;i<365;i++){var cd=fmtDate(dt);if(d[cd]&&d[cd].length>0){s++;dt.setDate(dt.getDate()-1)}else if(cd===t){dt.setDate(dt.getDate()-1)}else break}var b=document.getElementById('streakBadge');if(s>=2){b.classList.add('show');document.getElementById('streakCount').textContent=s}else{b.classList.remove('show')}}
+initToday();render();
+document.getElementById('addBtn').addEventListener('click',addItem);
+document.getElementById('itemInput').addEventListener('keydown',function(e){if(e.key==='Enter')addItem()});
+document.getElementById('prevDay').addEventListener('click',function(){navigate(-1)});
+document.getElementById('nextDay').addEventListener('click',function(){navigate(1)});
+document.getElementById('todayBtn').addEventListener('click',goToday);
+</script>
+</body>
+</html>
