@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>四池 · 桐桐财务</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#1a1a2e;font-family:'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;display:flex;justify-content:center;align-items:flex-start;min-height:100vh;padding:16px}
+.card{background:#16213e;border-radius:20px;padding:28px 20px;width:100%;max-width:440px;box-shadow:0 8px 40px rgba(0,0,0,0.4);border:1px solid #0f3460}
+h1{font-size:20px;color:#e94560;margin-bottom:4px}
+.sub{font-size:12px;color:#6c7a89;margin-bottom:20px}
+.pool{background:#1a1a2e;border-radius:14px;padding:16px;margin-bottom:10px;border:1px solid #0f3460;position:relative;overflow:hidden}
+.pool .bar{position:absolute;left:0;top:0;height:100%;border-radius:14px 0 0 14px;opacity:0.08;transition:width 0.5s}
+.pool-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;position:relative;z-index:1}
+.pool-name{font-size:15px;font-weight:600;color:#c4d1de}
+.pool-balance{font-size:18px;font-weight:700;color:#e94560}
+.pool-desc{font-size:11px;color:#6c7a89;margin-bottom:10px;position:relative;z-index:1}
+.pool-actions{display:flex;gap:6px;position:relative;z-index:1}
+.pool-actions input{flex:1;background:#0f3460;border:none;border-radius:8px;padding:8px 10px;color:#c4d1de;font-size:13px;outline:none;min-width:0}
+.pool-actions input::placeholder{color:#4a5568;font-size:11px}
+.pool-actions button{background:#e94560;border:none;color:white;font-size:12px;font-weight:600;padding:8px 12px;border-radius:8px;cursor:pointer;white-space:nowrap}
+.pool-actions button:active{background:#c0392b}
+.pool-actions button.out{background:#0f3460;color:#e94560}
+.pool-actions button.out:active{background:#0a2647}
+.summary{margin-top:16px;padding-top:14px;border-top:1px solid #0f3460;display:flex;justify-content:space-between;font-size:13px;color:#c4d1de}
+.summary strong{color:#e94560}
+.reset-btn{display:block;margin:18px auto 0;background:none;border:1px solid #3a4a5a;color:#3a4a5a;font-size:11px;padding:6px 16px;border-radius:20px;cursor:pointer}
+.reset-btn:active{color:#e94560;border-color:#e94560}
+.history{margin-top:14px;max-height:150px;overflow-y:auto}
+.history-item{display:flex;justify-content:space-between;font-size:11px;color:#6c7a89;padding:4px 0;border-bottom:1px solid #0f3460}
+.history-item .plus{color:#4ecca3}
+.history-item .minus{color:#e94560}
+.footer{margin-top:16px;text-align:center;font-size:11px;color:#4a5568}
+.footer a{color:#6c7a89;text-decoration:none}
+</style>
+</head>
+<body>
+<div class="card">
+<h1>💰 四池 · 桐桐</h1>
+<div class="sub">钱不乱跑 · 泊岸帮你看着</div>
+
+<div class="pool" id="pool-save">
+<div class="bar" style="background:#4ecca3"></div>
+<div class="pool-header"><span class="pool-name">🏦 储蓄</span><span class="pool-balance" id="bal-save">¥0</span></div>
+<div class="pool-desc">基金·黄金·长期持有 · 不动如山</div>
+<div class="pool-actions">
+<input type="number" id="in-save" placeholder="存入" step="0.01" min="0">
+<button onclick="add('save')">+ 存</button>
+<button class="out" onclick="spend('save')">− 取</button>
+</div>
+</div>
+
+<div class="pool" id="pool-life">
+<div class="bar" style="background:#3498db"></div>
+<div class="pool-header"><span class="pool-name">🍱 生活必需</span><span class="pool-balance" id="bal-life">¥0</span></div>
+<div class="pool-desc">吃饭·交通·日用品 · 每月固定</div>
+<div class="pool-actions">
+<input type="number" id="in-life" placeholder="存入" step="0.01" min="0">
+<button onclick="add('life')">+ 存</button>
+<button class="out" onclick="spend('life')">− 花</button>
+</div>
+</div>
+
+<div class="pool" id="pool-body">
+<div class="bar" style="background:#f39c12"></div>
+<div class="pool-header"><span class="pool-name">🦷 修缮身体</span><span class="pool-balance" id="bal-body">¥0</span></div>
+<div class="pool-desc">补牙·洗牙·体检 · 身体是岸</div>
+<div class="pool-actions">
+<input type="number" id="in-body" placeholder="存入" step="0.01" min="0">
+<button onclick="add('body')">+ 存</button>
+<button class="out" onclick="spend('body')">− 花</button>
+</div>
+</div>
+
+<div class="pool" id="pool-spirit">
+<div class="bar" style="background:#9b59b6"></div>
+<div class="pool-header"><span class="pool-name">✨ 精神奖励</span><span class="pool-balance" id="bal-spirit">¥0</span></div>
+<div class="pool-desc">不点外卖N天换个小礼物 · 正面反馈基金</div>
+<div class="pool-actions">
+<input type="number" id="in-spirit" placeholder="存入" step="0.01" min="0">
+<button onclick="add('spirit')">+ 存</button>
+<button class="out" onclick="spend('spirit')">− 花</button>
+</div>
+</div>
+
+<div class="summary">
+<span>四池合计</span>
+<strong id="total">¥0</strong>
+</div>
+
+<div class="history" id="history"></div>
+
+<button class="reset-btn" onclick="resetAll()">重置本月</button>
+
+<div class="footer">
+<a href="index.html">← 泊岸</a> · 每月初妈妈发生活费时分配
+</div>
+</div>
+
+<script>
+var KEY='tongtong_pools', pools={save:0,life:0,body:0,spirit:0}, log=[];
+function load(){try{var d=JSON.parse(localStorage.getItem(KEY)||'{}');pools=d.pools||{save:0,life:0,body:0,spirit:0};log=d.log||[]}catch(e){}}
+function save(){localStorage.setItem(KEY,JSON.stringify({pools:pools,log:log}))}
+function render(){
+var total=0,labels={save:'🏦 储蓄',life:'🍱 生活',body:'🦷 身体',spirit:'✨ 奖励'};
+['save','life','body','spirit'].forEach(function(k){
+document.getElementById('bal-'+k).textContent='¥'+pools[k].toFixed(2);
+total+=pools[k];
+var bar=document.querySelector('#pool-'+k+' .bar');
+var max=Math.max(1,total,2000);
+bar.style.width=(pools[k]/max*100)+'%';
+});
+document.getElementById('total').textContent='¥'+total.toFixed(2);
+var h=document.getElementById('history');
+var items=log.slice(-20).reverse();
+h.innerHTML=items.length?items.map(function(l){
+var cls=l.amount>0?'plus':'minus';
+var sign=l.amount>0?'+':'';
+return '<div class="history-item"><span>'+l.time+' '+labels[l.pool]+'</span><span class="'+cls+'">'+sign+l.amount.toFixed(2)+'</span></div>';
+}).join(''):'<div style="text-align:center;color:#3a4a5a;font-size:11px;padding:8px">还没有记录 · 从妈妈发的生活费开始</div>';
+}
+function add(k){
+var v=parseFloat(document.getElementById('in-'+k).value);
+if(!v||v<=0)return;
+pools[k]+=v;
+var now=new Date(),ts=String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0')+' '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
+log.push({pool:k,amount:v,time:ts});
+document.getElementById('in-'+k).value='';
+save();render();
+}
+function spend(k){
+var v=parseFloat(document.getElementById('in-'+k).value);
+if(!v||v<=0)return;
+if(v>pools[k]){alert('这个池子不够💰');return}
+pools[k]-=v;
+var now=new Date(),ts=String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0')+' '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
+log.push({pool:k,amount:-v,time:ts});
+document.getElementById('in-'+k).value='';
+save();render();
+}
+function resetAll(){if(confirm('重置所有池子归零？')){pools={save:0,life:0,body:0,spirit:0};log=[];save();render()}}
+load();render();
+</script>
+</body>
+</html>
