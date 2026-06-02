@@ -65,7 +65,7 @@ h1{font-size:20px;color:#e94560;margin-bottom:4px}
 <div class="pool" id="pool-body">
 <div class="bar" style="background:#f39c12"></div>
 <div class="pool-header"><span class="pool-name">🦷 修缮身体</span><span class="pool-balance" id="bal-body">¥0</span></div>
-<div class="pool-desc">补牙·洗牙·体检 · 身体是岸</div>
+<div class="pool-desc">补牙·洗特·体检 · 身体是岸</div>
 <div class="pool-actions">
 <input type="number" id="in-body" placeholder="存入" step="0.01" min="0">
 <button onclick="add('body')">+ 存</button>
@@ -84,6 +84,17 @@ h1{font-size:20px;color:#e94560;margin-bottom:4px}
 </div>
 </div>
 
+<div class="pool" id="pool-toy">
+<div class="bar" style="background:#e91e63"></div>
+<div class="pool-header"><span class="pool-name">🔦 小玩具基金</span><span class="pool-balance" id="bal-toy">¥0</span></div>
+<div class="pool-desc">不点外卖·自己做天·每顴+¥11 · 论文发表之日解锁</div>
+<div class="pool-actions">
+<input type="number" id="in-toy" placeholder="存入" step="0.01" min="0">
+<button onclick="add('toy')">+ 存</button>
+<button class="out" onclick="spend('toy')">− 取</button>
+</div>
+</div>
+
 <div class="summary">
 <span>四池合计</span>
 <strong id="total">¥0</strong>
@@ -94,17 +105,17 @@ h1{font-size:20px;color:#e94560;margin-bottom:4px}
 <button class="reset-btn" onclick="resetAll()">重置本月</button>
 
 <div class="footer">
-<a href="index.html">← 泊岸</a> · 每月初妈妈发生活费时分配
+<a href="index.html">← 泋岸</a> · 每月初妈妈发生活费时匆酇
 </div>
 </div>
 
 <script>
-var KEY='tongtong_pools', pools={save:0,life:0,body:0,spirit:0}, log=[];
-function load(){try{var d=JSON.parse(localStorage.getItem(KEY)||'{}');pools=d.pools||{save:0,life:0,body:0,spirit:0};log=d.log||[]}catch(e){}}
+var KEY='tongtong_pools', pools={sav:0,life:0,body:0,spirit:0,toy:0}, log=[];
+function load(){try{var d=JSON.parse(localStorage.getItem(KEY)||'{}');pools=d.pools||{save:0,life:0,body:0,spirit:0,toy:0};log=d.log||[]}catch(e){}}
 function save(){localStorage.setItem(KEY,JSON.stringify({pools:pools,log:log}))}
 function render(){
-var total=0,labels={save:'🏦 储蓄',life:'🍱 生活',body:'🦷 身体',spirit:'✨ 奖励'};
-['save','life','body','spirit'].forEach(function(k){
+var total=0,labels={save:'🏦 储蓄',life:'🍱 生活',body:'🦷 身体',spirit:'✨ 奖励',toy:'🔦 小玩具'};
+['save','life','body','spirit','toy'].forEach(function(k){
 document.getElementById('bal-'+k).textContent='¥'+pools[k].toFixed(2);
 total+=pools[k];
 var bar=document.querySelector('#pool-'+k+' .bar');
@@ -139,7 +150,7 @@ log.push({pool:k,amount:-v,time:ts});
 document.getElementById('in-'+k).value='';
 save();render();
 }
-function resetAll(){if(confirm('重置所有池子归零？')){pools={save:0,life:0,body:0,spirit:0};log=[];save();render()}}
+function resetAll(){if(confirm('重置所有池子归零？')){pools={save:0,life:0,body:0,spirit:0,toy:0};log=[];save();render()}}
 load();render();
 </script>
 </body>
