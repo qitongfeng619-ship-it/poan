@@ -1,0 +1,22 @@
+{
+  "name": "四池 · 桐桐财务",
+  "short_name": "四池",
+  "description": "钱不乱跑 · 泊岸帮你看着",
+  "start_url": "/poan/pools.html",
+  "scope": "/poan/",
+  "display": "standalone",
+  "background_color": "#1a1a2e",
+  "theme_color": "#e94560",
+  "icons": [
+    {
+      "src": "/poan/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/poan/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
