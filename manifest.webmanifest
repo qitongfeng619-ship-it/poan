@@ -1,12 +1,13 @@
 {
-  "name": "四池 · 桐桐财务",
-  "short_name": "四池",
-  "description": "钱不乱跑 · 泊岸帮你看着",
-  "start_url": "/poan/pools.html",
+  "name": "泊岸 · 桐桐的专属角落",
+  "short_name": "泊岸",
+  "description": "河靠岸的地方",
+  "start_url": "/poan/index.html",
   "scope": "/poan/",
   "display": "standalone",
   "background_color": "#1a1a2e",
   "theme_color": "#e94560",
+  "orientation": "portrait",
   "icons": [
     {
       "src": "/poan/icon.svg",
