@@ -4,6 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>泊岸 · 桐桐</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#e94560">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="泊岸">
+<link rel="apple-touch-icon" href="icon.svg">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:#1a1a2e;font-family:'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;display:flex;justify-content:center;align-items:center;min-height:100vh;padding:16px}
@@ -45,5 +51,8 @@ Done List · 做完才记
 <span>泊岸</span> · 2026.6.1 起 · 7.31 更新三个新模块
 </div>
 </div>
+<script>
+if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
+</script>
 </body>
 </html>
