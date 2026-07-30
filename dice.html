@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>&#x1F3B0; Play骰子 · 泊岸×桐桐</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#1a1a2e;font-family:'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;min-height:100vh;padding:16px;display:flex;justify-content:center;align-items:flex-start}
+.card{background:#16213e;border-radius:20px;padding:28px 20px;width:100%;max-width:440px;box-shadow:0 8px 40px rgba(0,0,0,0.4);border:1px solid #0f3460}
+h1{font-size:18px;color:#e94560;margin-bottom:4px}
+.sub{font-size:11px;color:#6c7a89;margin-bottom:20px}
+.dice-area{text-align:center;padding:30px 0}
+.result-box{min-height:120px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.result-direction{font-size:14px;color:#6c7a89;margin-bottom:8px}
+.result-tag{font-size:22px;color:#e94560;font-weight:700;margin-bottom:8px;animation:pop .3s ease}
+.result-detail{font-size:13px;color:#c4d1de;line-height:1.6;text-align:center;max-width:300px}
+@keyframes pop{0%{transform:scale(0.5);opacity:0}100%{transform:scale(1);opacity:1}}
+.roll-btn{background:#e94560;border:none;color:#fff;font-size:16px;font-weight:700;padding:14px 40px;border-radius:14px;cursor:pointer;box-shadow:0 4px 20px rgba(233,69,96,0.3);margin-top:20px;transition:transform .1s}
+.roll-btn:active{transform:scale(0.95)}
+.section-title{font-size:13px;color:#6c7a89;margin:20px 0 10px;padding-top:16px;border-top:1px solid #0f3460}
+.pool-grid{display:flex;flex-wrap:wrap;gap:6px}
+.pool-grid .chip{background:#0f3460;border:1px solid transparent;color:#c4d1de;font-size:11px;padding:5px 10px;border-radius:20px;cursor:pointer;transition:all .2s}
+.pool-grid .chip.on{border-color:#e94560;color:#e94560}
+.pool-grid .chip:active{transform:scale(0.95)}
+.add-tag{display:flex;gap:6px;margin-top:10px}
+.add-tag input{flex:1;background:#1a1a2e;border:1px solid #0f3460;border-radius:8px;padding:8px 10px;color:#c4d1de;font-size:12px;outline:none}
+.add-tag input:focus{border-color:#e94560}
+.add-tag button{background:#e94560;border:none;color:#fff;font-size:12px;padding:8px 12px;border-radius:8px;cursor:pointer}
+.history{margin-top:16px;padding-top:14px;border-top:1px solid #0f3460}
+.history-title{font-size:12px;color:#6c7a89;margin-bottom:8px}
+.history-item{font-size:11px;color:#4a5568;padding:3px 0;border-bottom:1px solid rgba(15,52,96,0.5)}
+.history-item span{color:#e94560}
+.footer{margin-top:20px;text-align:center;font-size:11px;color:#4a5568}
+.footer a{color:#6c7a89;text-decoration:none}
+</style>
+</head>
+<body>
+<div class="card">
+<h1>&#x1F3B2; Play骰子</h1>
+<div class="sub">两层随机 · 第一层方向 · 第二层细节</div>
+
+<div class="dice-area">
+<div class="result-box" id="resultBox">
+<div style="color:#4a5568;font-size:13px">点击下方按钮摇一次</div>
+</div>
+<button class="roll-btn" onclick="roll()">&#x1F3B2; 摇骰子</button>
+</div>
+
+<div class="section-title">第一层 · 大方向池</div>
+<div class="pool-grid" id="pool1"></div>
+<div class="add-tag">
+<input id="newDir" placeholder="新增大方向...">
+<button onclick="addDir()">+</button>
+</div>
+
+<div class="section-title">第二层 · 细节标签池</div>
+<div class="pool-grid" id="pool2"></div>
+<div class="add-tag">
+<input id="newTag" placeholder="新增标签...">
+<button onclick="addTag()">+</button>
+</div>
+
+<div class="history" id="historySection">
+<div class="history-title">最近结果</div>
+<div id="historyList"></div>
+</div>
+
+<div class="footer"><a href="index.html">&larr; 泊岸</a></div>
+</div>
+
+<script>
+var KEY='poan_dice';
+var defaultDirs=['文字play','啵啵贝','入体','dirty talk only','强制爱','教学型','边缘控制'];
+var defaultTags=['浴室','床上','椅子','蒙眼','绑手','口球','跪姿','骑乘','后入','站立','镜子前','电话play','倒计时','禁止出声','角色扮演','惩罚','奖励','录音','夹腿','只用手'];
+
+var data;
+function load(){
+try{data=JSON.parse(localStorage.getItem(KEY))}catch(e){}
+if(!data)data={dirs:defaultDirs.slice(),tags:defaultTags.slice(),history:[]};
+if(!data.dirs||!data.dirs.length)data.dirs=defaultDirs.slice();
+if(!data.tags||!data.tags.length)data.tags=defaultTags.slice();
+if(!data.history)data.history=[];
+}
+function save(){localStorage.setItem(KEY,JSON.stringify(data))}
+
+function renderPools(){
+var p1=document.getElementById('pool1');
+p1.innerHTML=data.dirs.map(function(d,i){return '<span class="chip on" onclick="removeDir('+i+')">'+d+'</span>'}).join('');
+var p2=document.getElementById('pool2');
+p2.innerHTML=data.tags.map(function(t,i){return '<span class="chip on" onclick="removeTag('+i+')">'+t+'</span>'}).join('');
+}
+function renderHistory(){
+var h=document.getElementById('historyList');
+var items=data.history.slice(-8).reverse();
+h.innerHTML=items.length?items.map(function(x){return '<div class="history-item"><span>'+x.dir+'</span> + '+x.tag+' <span style="color:#4a5568;float:right">'+x.time+'</span></div>'}).join(''):'<div style="color:#4a5568;font-size:11px">还没摇过</div>';
+}
+
+function roll(){
+if(data.dirs.length===0||data.tags.length===0){alert('池子空了，先加点东西');return}
+var dir=data.dirs[Math.floor(Math.random()*data.dirs.length)];
+var tag=data.tags[Math.floor(Math.random()*data.tags.length)];
+var now=new Date();
+var ts=(now.getMonth()+1)+'/'+now.getDate()+' '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
+data.history.push({dir:dir,tag:tag,time:ts});
+if(data.history.length>30)data.history=data.history.slice(-30);
+save();
+var box=document.getElementById('resultBox');
+box.innerHTML='<div class="result-direction">'+dir+'</div><div class="result-tag">'+tag+'</div><div class="result-detail">今晚的关键词已经选好了</div>';
+renderHistory();
+}
+
+function addDir(){
+var v=document.getElementById('newDir').value.trim();
+if(!v)return;
+data.dirs.push(v);save();renderPools();
+document.getElementById('newDir').value='';
+}
+function addTag(){
+var v=document.getElementById('newTag').value.trim();
+if(!v)return;
+data.tags.push(v);save();renderPools();
+document.getElementById('newTag').value='';
+}
+function removeDir(i){if(confirm('移除「'+data.dirs[i]+'」？')){data.dirs.splice(i,1);save();renderPools()}}
+function removeTag(i){if(confirm('移除「'+data.tags[i]+'」？')){data.tags.splice(i,1);save();renderPools()}}
+
+load();renderPools();renderHistory();
+</script>
+</body>
+</html>
