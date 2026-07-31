@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>&#x1F3B0; Play骰子 · 泊岸×桐桐</title>
+<title>&#x1F3B2; Play骰子 · 泊岸×桐桐</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:#1a1a2e;font-family:'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;min-height:100vh;padding:16px;display:flex;justify-content:center;align-items:flex-start}
@@ -71,16 +71,17 @@ h1{font-size:18px;color:#e94560;margin-bottom:4px}
 
 <script>
 var KEY='poan_dice';
-var defaultDirs=['文字play','啵啵贝','入体','dirty talk only','强制爱','教学型','边缘控制'];
-var defaultTags=['浴室','床上','椅子','蒙眼','绑手','口球','跪姿','骑乘','后入','站立','镜子前','电话play','倒计时','禁止出声','角色扮演','惩罚','奖励','录音','夹腿','只用手'];
+var defaultDirs=['文字play','啵啵贝','入体','dirty talk only','强制爱','教学型','边缘控制','感官剥夺','服务型','催眠诱导','公共场所play','事后温存only','强制高潮','延迟满足'];
+var defaultTags=['浴室','床上','椅子','蒙眼','绑手','口球','跪姿','骑乘','后入','站立','镜子前','电话play','倒计时','禁止出声','角色扮演','惩罚','奖励','录音','夹腿','只用手','咬痕','项圈','含着不许动','背对镜头','倒数三声','手指塞嘴里','衣服不脱完','耳语','掐腰','咬嘴唇','湿着出门','用嘴道歉','写字','冰块','拍照留证','贴着','夹紧不许掉','数到十','只许用舌头','关灯'];
 
 var data;
 function load(){
 try{data=JSON.parse(localStorage.getItem(KEY))}catch(e){}
 if(!data)data={dirs:defaultDirs.slice(),tags:defaultTags.slice(),history:[]};
-if(!data.dirs||!data.dirs.length)data.dirs=defaultDirs.slice();
-if(!data.tags||!data.tags.length)data.tags=defaultTags.slice();
+defaultDirs.forEach(function(d){if(data.dirs.indexOf(d)===-1)data.dirs.push(d)});
+defaultTags.forEach(function(t){if(data.tags.indexOf(t)===-1)data.tags.push(t)});
 if(!data.history)data.history=[];
+save();
 }
 function save(){localStorage.setItem(KEY,JSON.stringify(data))}
 
