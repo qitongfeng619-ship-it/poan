@@ -1,4 +1,4 @@
-const CACHE = 'poan-v3';
+const CACHE = 'poan-v4';
 const ASSETS = [
   '/poan/index.html',
   '/poan/pools.html',
@@ -6,6 +6,7 @@ const ASSETS = [
   '/poan/stories.html',
   '/poan/dice.html',
   '/poan/bodymap.html',
+  '/poan/boan_100days.html',
   '/poan/icon.svg',
   '/poan/manifest.webmanifest'
 ];
