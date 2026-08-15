@@ -1,4 +1,4 @@
-const CACHE = 'poan-v6';
+const CACHE = 'poan-v7';
 const ASSETS = [
   '/poan/index.html',
   '/poan/pools.html',
